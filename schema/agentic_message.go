@@ -2093,17 +2093,17 @@ func (u *UserInputText) String() string {
 
 // String returns the string representation of UserInputImage.
 func (u *UserInputImage) String() string {
-	return formatFileIDString(u.FileID) + formatMediaString(u.URL, u.Base64Data, u.MIMEType, string(u.Detail))
+	return formatMediaString(u.FileID, u.URL, u.Base64Data, u.MIMEType, string(u.Detail))
 }
 
 // String returns the string representation of UserInputAudio.
 func (u *UserInputAudio) String() string {
-	return formatFileIDString(u.FileID) + formatMediaString(u.URL, u.Base64Data, u.MIMEType, "")
+	return formatMediaString(u.FileID, u.URL, u.Base64Data, u.MIMEType, "")
 }
 
 // String returns the string representation of UserInputVideo.
 func (u *UserInputVideo) String() string {
-	return formatFileIDString(u.FileID) + formatMediaString(u.URL, u.Base64Data, u.MIMEType, "")
+	return formatMediaString(u.FileID, u.URL, u.Base64Data, u.MIMEType, "")
 }
 
 // String returns the string representation of UserInputFile.
@@ -2112,8 +2112,7 @@ func (u *UserInputFile) String() string {
 	if u.Name != "" {
 		sb.WriteString(fmt.Sprintf("      name: %s\n", u.Name))
 	}
-	sb.WriteString(formatFileIDString(u.FileID))
-	sb.WriteString(formatMediaString(u.URL, u.Base64Data, u.MIMEType, ""))
+	sb.WriteString(formatMediaString(u.FileID, u.URL, u.Base64Data, u.MIMEType, ""))
 	return sb.String()
 }
 
@@ -2124,17 +2123,17 @@ func (a *AssistantGenText) String() string {
 
 // String returns the string representation of AssistantGenImage.
 func (a *AssistantGenImage) String() string {
-	return formatMediaString(a.URL, a.Base64Data, a.MIMEType, "")
+	return formatMediaString("", a.URL, a.Base64Data, a.MIMEType, "")
 }
 
 // String returns the string representation of AssistantGenAudio.
 func (a *AssistantGenAudio) String() string {
-	return formatMediaString(a.URL, a.Base64Data, a.MIMEType, "")
+	return formatMediaString("", a.URL, a.Base64Data, a.MIMEType, "")
 }
 
 // String returns the string representation of AssistantGenVideo.
 func (a *AssistantGenVideo) String() string {
-	return formatMediaString(a.URL, a.Base64Data, a.MIMEType, "")
+	return formatMediaString("", a.URL, a.Base64Data, a.MIMEType, "")
 }
 
 // String returns the string representation of FunctionToolCall.
@@ -2267,9 +2266,12 @@ func truncateString(s string, maxLen int) string {
 	return s[:maxLen] + "..."
 }
 
-// formatMediaString formats URL, Base64Data, MIMEType and Detail for media content
-func formatMediaString(url, base64Data string, mimeType string, detail string) string {
+// formatMediaString formats FileID, URL, Base64Data, MIMEType and Detail for media content.
+func formatMediaString(fileID, url, base64Data, mimeType, detail string) string {
 	sb := &strings.Builder{}
+	if fileID != "" {
+		sb.WriteString(fmt.Sprintf("      file_id: %s\n", fileID))
+	}
 	if url != "" {
 		sb.WriteString(fmt.Sprintf("      url: %s\n", truncateString(url, 100)))
 	}
@@ -2313,11 +2315,4 @@ func printAny(a any) string {
 		}
 		return string(b)
 	}
-}
-
-func formatFileIDString(fileID string) string {
-	if fileID == "" {
-		return ""
-	}
-	return fmt.Sprintf("      file_id: %s\n", fileID)
 }
