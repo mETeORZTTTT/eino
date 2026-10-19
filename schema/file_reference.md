@@ -34,7 +34,9 @@ a schema dependency upgrade alone does not enable provider support. The deprecat
 `Message.MultiContent` representation is not extended by this change.
 
 Eino preserves the opaque value through JSON serialization, message formatting,
-and tool-result conversion. Prompt formatting does not substitute variables in
+and tool-result conversion, including ADK/ToolsNode wrapping and the
+patchtoolcalls/reduction middleware conversions. Provider support for a tool
+result still depends on its API and media type. Prompt formatting does not substitute variables in
 FileID. Uploading, polling file readiness, selecting account-scoped references,
 checking expiry, and deleting or renewing files remain application responsibilities.
 
