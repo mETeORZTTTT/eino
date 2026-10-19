@@ -185,6 +185,7 @@ func messageInputPartsToFunctionToolBlocks(parts []schema.MessageInputPart) []*s
 		case schema.ChatMessagePartTypeImageURL:
 			if p.Image != nil {
 				block = newFuncToolResultContentBlock(&schema.UserInputImage{
+					FileID:     derefString(p.Image.FileID),
 					URL:        derefString(p.Image.URL),
 					Base64Data: derefString(p.Image.Base64Data),
 					MIMEType:   p.Image.MIMEType,
@@ -195,6 +196,7 @@ func messageInputPartsToFunctionToolBlocks(parts []schema.MessageInputPart) []*s
 		case schema.ChatMessagePartTypeAudioURL:
 			if p.Audio != nil {
 				block = newFuncToolResultContentBlock(&schema.UserInputAudio{
+					FileID:     derefString(p.Audio.FileID),
 					URL:        derefString(p.Audio.URL),
 					Base64Data: derefString(p.Audio.Base64Data),
 					MIMEType:   p.Audio.MIMEType,
@@ -204,6 +206,7 @@ func messageInputPartsToFunctionToolBlocks(parts []schema.MessageInputPart) []*s
 		case schema.ChatMessagePartTypeVideoURL:
 			if p.Video != nil {
 				block = newFuncToolResultContentBlock(&schema.UserInputVideo{
+					FileID:     derefString(p.Video.FileID),
 					URL:        derefString(p.Video.URL),
 					Base64Data: derefString(p.Video.Base64Data),
 					MIMEType:   p.Video.MIMEType,
@@ -213,6 +216,7 @@ func messageInputPartsToFunctionToolBlocks(parts []schema.MessageInputPart) []*s
 		case schema.ChatMessagePartTypeFileURL:
 			if p.File != nil {
 				block = newFuncToolResultContentBlock(&schema.UserInputFile{
+					FileID:     derefString(p.File.FileID),
 					URL:        derefString(p.File.URL),
 					Base64Data: derefString(p.File.Base64Data),
 					Name:       p.File.Name,
