@@ -183,6 +183,13 @@ type UserInputText struct {
 }
 
 type UserInputImage struct {
+	// FileID is an opaque reference to a file already uploaded to the model service.
+	// It is scoped to that service and account, and is mutually exclusive with URL
+	// and Base64Data. Support depends on the model implementation, API and media
+	// type. Eino does not upload, resolve or renew the referenced file.
+	// For a file URI (for example, gs://...), use URL instead.
+	FileID string `json:"file_id,omitempty"`
+
 	// URL is the HTTP/HTTPS link.
 	URL string `json:"url,omitempty"`
 
@@ -197,6 +204,13 @@ type UserInputImage struct {
 }
 
 type UserInputAudio struct {
+	// FileID is an opaque reference to a file already uploaded to the model service.
+	// It is scoped to that service and account, and is mutually exclusive with URL
+	// and Base64Data. Support depends on the model implementation, API and media
+	// type. Eino does not upload, resolve or renew the referenced file.
+	// For a file URI (for example, gs://...), use URL instead.
+	FileID string `json:"file_id,omitempty"`
+
 	// URL is the HTTP/HTTPS link.
 	URL string `json:"url,omitempty"`
 
@@ -208,6 +222,13 @@ type UserInputAudio struct {
 }
 
 type UserInputVideo struct {
+	// FileID is an opaque reference to a file already uploaded to the model service.
+	// It is scoped to that service and account, and is mutually exclusive with URL
+	// and Base64Data. Support depends on the model implementation, API and media
+	// type. Eino does not upload, resolve or renew the referenced file.
+	// For a file URI (for example, gs://...), use URL instead.
+	FileID string `json:"file_id,omitempty"`
+
 	// URL is the HTTP/HTTPS link.
 	URL string `json:"url,omitempty"`
 
@@ -219,6 +240,13 @@ type UserInputVideo struct {
 }
 
 type UserInputFile struct {
+	// FileID is an opaque reference to a file already uploaded to the model service.
+	// It is scoped to that service and account, and is mutually exclusive with URL
+	// and Base64Data. Support depends on the model implementation, API and media
+	// type. Eino does not upload, resolve or renew the referenced file.
+	// For a file URI (for example, gs://...), use URL instead.
+	FileID string `json:"file_id,omitempty"`
+
 	// URL is the HTTP/HTTPS link.
 	URL string `json:"url,omitempty"`
 
@@ -2065,17 +2093,17 @@ func (u *UserInputText) String() string {
 
 // String returns the string representation of UserInputImage.
 func (u *UserInputImage) String() string {
-	return formatMediaString(u.URL, u.Base64Data, u.MIMEType, string(u.Detail))
+	return formatFileIDString(u.FileID) + formatMediaString(u.URL, u.Base64Data, u.MIMEType, string(u.Detail))
 }
 
 // String returns the string representation of UserInputAudio.
 func (u *UserInputAudio) String() string {
-	return formatMediaString(u.URL, u.Base64Data, u.MIMEType, "")
+	return formatFileIDString(u.FileID) + formatMediaString(u.URL, u.Base64Data, u.MIMEType, "")
 }
 
 // String returns the string representation of UserInputVideo.
 func (u *UserInputVideo) String() string {
-	return formatMediaString(u.URL, u.Base64Data, u.MIMEType, "")
+	return formatFileIDString(u.FileID) + formatMediaString(u.URL, u.Base64Data, u.MIMEType, "")
 }
 
 // String returns the string representation of UserInputFile.
@@ -2084,6 +2112,7 @@ func (u *UserInputFile) String() string {
 	if u.Name != "" {
 		sb.WriteString(fmt.Sprintf("      name: %s\n", u.Name))
 	}
+	sb.WriteString(formatFileIDString(u.FileID))
 	sb.WriteString(formatMediaString(u.URL, u.Base64Data, u.MIMEType, ""))
 	return sb.String()
 }
@@ -2284,4 +2313,11 @@ func printAny(a any) string {
 		}
 		return string(b)
 	}
+}
+
+func formatFileIDString(fileID string) string {
+	if fileID == "" {
+		return ""
+	}
+	return fmt.Sprintf("      file_id: %s\n", fileID)
 }

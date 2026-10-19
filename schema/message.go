@@ -158,6 +158,13 @@ const (
 
 // MessagePartCommon represents the common abstract components for input and output of multi-modal types.
 type MessagePartCommon struct {
+	// FileID is an opaque reference to a file already uploaded to the model service.
+	// It is scoped to that service and account, and is mutually exclusive with URL
+	// and Base64Data. Support depends on the model implementation, API and media
+	// type. Eino does not upload, resolve or renew the referenced file.
+	// For a file URI (for example, gs://...), use URL instead.
+	FileID *string `json:"file_id,omitempty"`
+
 	// URL is primarily used for HTTP or HTTPS access links.
 	// For data in the format 'data:[<mediatype>][;base64],<data>' (the 'data' URL Schema of RFC-2397 (https://www.rfc-editor.org/rfc/rfc2397)),
 	// it is recommended to use Base64Data and MIMEType fields separately instead.
@@ -174,7 +181,7 @@ type MessagePartCommon struct {
 }
 
 // MessageInputImage is used to represent an image part in message.
-// Choose either URL or Base64Data.
+// Choose one of FileID, URL or Base64Data, as supported by the model implementation.
 type MessageInputImage struct {
 	MessagePartCommon
 
@@ -183,19 +190,19 @@ type MessageInputImage struct {
 }
 
 // MessageInputAudio is used to represent an audio part in message.
-// Choose either URL or Base64Data.
+// Choose one of FileID, URL or Base64Data, as supported by the model implementation.
 type MessageInputAudio struct {
 	MessagePartCommon
 }
 
 // MessageInputVideo is used to represent a video part in message.
-// Choose either URL or Base64Data.
+// Choose one of FileID, URL or Base64Data, as supported by the model implementation.
 type MessageInputVideo struct {
 	MessagePartCommon
 }
 
 // MessageInputFile is used to represent a file part in message.
-// Choose either URL or Base64Data.
+// Choose one of FileID, URL or Base64Data, as supported by the model implementation.
 type MessageInputFile struct {
 	MessagePartCommon
 
@@ -933,6 +940,9 @@ func formatMessageInputMedia[T MessageInputImage | MessageInputAudio | MessageIn
 	var parts []string
 	switch v := any(media).(type) {
 	case *MessageInputImage:
+		if v.FileID != nil {
+			parts = append(parts, fmt.Sprintf("file_id=%s", *v.FileID))
+		}
 		if v.URL != nil {
 			parts = append(parts, fmt.Sprintf("url=%s", *v.URL))
 		}
@@ -949,6 +959,9 @@ func formatMessageInputMedia[T MessageInputImage | MessageInputAudio | MessageIn
 			parts = append(parts, fmt.Sprintf("extra=%v", v.Extra))
 		}
 	case *MessageInputAudio:
+		if v.FileID != nil {
+			parts = append(parts, fmt.Sprintf("file_id=%s", *v.FileID))
+		}
 		if v.URL != nil {
 			parts = append(parts, fmt.Sprintf("url=%s", *v.URL))
 		}
@@ -962,6 +975,9 @@ func formatMessageInputMedia[T MessageInputImage | MessageInputAudio | MessageIn
 			parts = append(parts, fmt.Sprintf("extra=%v", v.Extra))
 		}
 	case *MessageInputVideo:
+		if v.FileID != nil {
+			parts = append(parts, fmt.Sprintf("file_id=%s", *v.FileID))
+		}
 		if v.URL != nil {
 			parts = append(parts, fmt.Sprintf("url=%s", *v.URL))
 		}
@@ -986,6 +1002,9 @@ func formatMessageInputFile(file *MessageInputFile) string {
 		return "<nil>"
 	}
 	var parts []string
+	if file.FileID != nil {
+		parts = append(parts, fmt.Sprintf("file_id=%s", *file.FileID))
+	}
 	if file.URL != nil {
 		parts = append(parts, fmt.Sprintf("url=%s", *file.URL))
 	}
